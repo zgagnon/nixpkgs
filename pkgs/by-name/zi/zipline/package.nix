@@ -48,13 +48,13 @@ in
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "zipline";
-  version = "4.3.1";
+  version = "4.3.2";
 
   src = fetchFromGitHub {
     owner = "diced";
     repo = "zipline";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-tQRfgLU0Dvf3vhELsttprfzscvHUgI1u7k9RA4S4vqo=";
+    hash = "sha256-t83LYLjAdXQkQKZlzaBCIs1wKk3v3GVQi8QHUPRHC18=";
     leaveDotGit = true;
     postFetch = ''
       git -C $out rev-parse --short HEAD > $out/.git_head
@@ -65,7 +65,7 @@ stdenv.mkDerivation (finalAttrs: {
   pnpmDeps = pnpm_10.fetchDeps {
     inherit (finalAttrs) pname version src;
     fetcherVersion = 2;
-    hash = "sha256-zbr57RVBKGpnL5u0evbQAKGyMftHXj6cuntYBHiUxiM=";
+    hash = "sha256-i5unHz7Hs9zvnjgLwHJaoFdM2z/5ucXZG8eouko1Res=";
   };
 
   buildInputs = [
@@ -83,7 +83,9 @@ stdenv.mkDerivation (finalAttrs: {
     python3
   ];
 
-  env = environment;
+  env = environment // {
+    DATABASE_URL = "dummy";
+  };
 
   buildPhase = ''
     runHook preBuild
@@ -132,6 +134,7 @@ stdenv.mkDerivation (finalAttrs: {
   nativeInstallCheckInputs = [ versionCheckHook ];
   versionCheckProgram = "${placeholder "out"}/bin/ziplinectl";
   versionCheckProgramArg = "--version";
+  versionCheckKeepEnvironment = [ "DATABASE_URL" ];
   doInstallCheck = true;
 
   passthru = {
